@@ -2,7 +2,6 @@ package com.lifexweb.app.hadoop.mapreduce;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -14,20 +13,30 @@ public class AccessLogParseReducer extends Reducer<LogKeyWritable, NullWritable,
 
 	private Text resultKey = new Text();
     private SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private Date logDatetime = new Date();
+    private LogKeyWritable tmpLogKey = new LogKeyWritable();
 	
 	@Override
 	protected void reduce(LogKeyWritable logKey, Iterable<NullWritable> value, Context context)
 			throws IOException, InterruptedException {
 		
 		for (NullWritable nw : value) {
-			
-			//debug
-			logDatetime.setTime(logKey.getLogDatetime());
-			resultKey.set(fmt.format(logDatetime) + "\t" + logKey.getUserId() + "\t" + 
-					logKey.getUrlId() + "\t" + logKey.getCvId());
-			context.write(resultKey, NullWritable.get());
+			if (tmpLogKey.getLogDatetime() == 0 || isUrlLog(tmpLogKey)) {
+				tmpLogKey.set(logKey);
+			} else if (!isUrlLog(tmpLogKey)) {
+				if (isUrlLog(logKey)) {
+					resultKey.set(fmt.format(logKey.getLogDatetime()) + "\t" + 
+									fmt.format(tmpLogKey.getLogDatetime()) + "\t" + 
+									logKey.getUserId() + "\t" + 
+									logKey.getUrlId() + "\t" + 
+									tmpLogKey.getCvId());
+					context.write(resultKey, NullWritable.get());
+				}
+				tmpLogKey.set(logKey);
+			}	
 		}
-		context.write(new Text("-------------"), NullWritable.get());
 	}	
+
+	private boolean isUrlLog(LogKeyWritable log) {
+		return (log.getUrlId() > 0 && log.getCvId() == 0);
+	}
 }

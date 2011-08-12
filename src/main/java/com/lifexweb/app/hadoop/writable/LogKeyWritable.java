@@ -10,22 +10,29 @@ public class LogKeyWritable implements WritableComparable<LogKeyWritable> {
 
 	private Long logDatetime;
 	private String userId;
-	private String urlId;
-	private String cvId;
+	private int urlId;
+	private int cvId;
 	
 	public LogKeyWritable() {
-		set(new Long(0), new String(), new String(), new String());
+		set(0L, new String(), 0, 0);
 	}
 	
-	public LogKeyWritable(Long logDatetime, String userId, String urlId, String cvId) {
+	public LogKeyWritable(Long logDatetime, String userId, int urlId, int cvId) {
 		set(logDatetime, userId, urlId, cvId);
 	}
 
-	public void set(Long logDatetime, String userId, String urlId, String cvId) {
+	public void set(Long logDatetime, String userId, int urlId, int cvId) {
 		this.logDatetime = logDatetime;
 		this.userId = userId;
 		this.urlId = urlId;
 		this.cvId = cvId;
+	}
+	
+	public void set(LogKeyWritable logKey) {
+		this.logDatetime = logKey.getLogDatetime();
+		this.userId = logKey.getUserId();
+		this.urlId = logKey.getUrlId();
+		this.cvId = logKey.getCvId();		
 	}
 	
 	public Long getLogDatetime() {
@@ -44,34 +51,34 @@ public class LogKeyWritable implements WritableComparable<LogKeyWritable> {
 		this.userId = userId;
 	}
 
-	public String getUrlId() {
+	public int getUrlId() {
 		return urlId;
 	}
 
-	public void setUrlId(String urlId) {
+	public void setUrlId(int urlId) {
 		this.urlId = urlId;
 	}
 
-	public String getCvId() {
+	public int getCvId() {
 		return cvId;
 	}
 
-	public void setCvId(String cvId) {
+	public void setCvId(int cvId) {
 		this.cvId = cvId;
 	}
 
 	public void write(DataOutput out) throws IOException {
 		out.writeLong(logDatetime);
 		out.writeUTF(userId);
-		out.writeUTF(urlId);
-		out.writeUTF(cvId);
+		out.writeInt(urlId);
+		out.writeInt(cvId);
 	}
 
 	public void readFields(DataInput in) throws IOException {
 		logDatetime = in.readLong();
 		userId = in.readUTF();
-		urlId = in.readUTF();
-		cvId = in.readUTF();
+		urlId = in.readInt();
+		cvId = in.readInt();
 	}
 
 	//TODO 一旦まったく同時刻のURLアクセスとCVの場合は考慮しない
