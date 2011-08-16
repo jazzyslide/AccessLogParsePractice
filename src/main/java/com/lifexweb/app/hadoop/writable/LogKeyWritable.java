@@ -81,13 +81,22 @@ public class LogKeyWritable implements WritableComparable<LogKeyWritable> {
 		cvId = in.readInt();
 	}
 
-	//TODO 一旦まったく同時刻のURLアクセスとCVの場合は考慮しない
+	/**
+	 * 同じuserId単位で時刻が新しいものから（降順）並べ替え
+	 * まったく同時刻のURLアクセスとCVの場合はログの書きこまれている順に処理する
+	 * (同時刻でもURL -> CV の順で書きこまれていればカウントできるようにする)
+	 */
 	public int compareTo(LogKeyWritable cmpLine) {
 		int cmp = userId.compareTo(cmpLine.getUserId());
 		if (cmp != 0) {
 			return cmp;
 		}
-		return logDatetime.compareTo(cmpLine.getLogDatetime()) * -1;
+		
+		cmp = logDatetime.compareTo(cmpLine.getLogDatetime()) * -1;
+		if (cmp != 0) {
+			return cmp;
+		}
+		return 1;			
 	}
 	
 	@Override
