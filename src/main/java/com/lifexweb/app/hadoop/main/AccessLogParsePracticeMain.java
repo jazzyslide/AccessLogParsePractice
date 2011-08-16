@@ -48,7 +48,7 @@ public class AccessLogParsePracticeMain {
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(NullWritable.class);
 		
-		job.setNumReduceTasks(1);
+		job.setNumReduceTasks(3);
 		
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));

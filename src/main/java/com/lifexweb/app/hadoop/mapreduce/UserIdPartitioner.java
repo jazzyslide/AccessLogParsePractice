@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Partitioner;
 import com.lifexweb.app.hadoop.writable.LogKeyWritable;
 
 public class UserIdPartitioner extends Partitioner<LogKeyWritable, NullWritable> {
-		
+	
 	@Override
 	public int getPartition(LogKeyWritable key, NullWritable value, int numReducer) {
 		//UserIdで同じ所に行くようにする
