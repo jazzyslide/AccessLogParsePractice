@@ -15,9 +15,11 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 import com.lifexweb.app.hadoop.mapreduce.AccessLogParseMapper;
 import com.lifexweb.app.hadoop.mapreduce.AccessLogParseReducer;
+import com.lifexweb.app.hadoop.mapreduce.LogSortComparator;
 import com.lifexweb.app.hadoop.mapreduce.UserIdComparator;
 import com.lifexweb.app.hadoop.mapreduce.UserIdPartitioner;
 import com.lifexweb.app.hadoop.writable.LogKeyWritable;
+import com.lifexweb.app.hadoop.writable.LogValueWritable;
 
 /**
  * @author kato_hideya
@@ -36,6 +38,7 @@ public class AccessLogParsePracticeMain {
 		
 		job.setMapperClass(AccessLogParseMapper.class);
 		job.setPartitionerClass(UserIdPartitioner.class);
+		job.setSortComparatorClass(LogSortComparator.class);
 		job.setGroupingComparatorClass(UserIdComparator.class);
 		job.setReducerClass(AccessLogParseReducer.class);
 		
@@ -43,9 +46,9 @@ public class AccessLogParsePracticeMain {
 		job.setOutputFormatClass(TextOutputFormat.class);
 		
 		job.setMapOutputKeyClass(LogKeyWritable.class);
-		job.setMapOutputValueClass(NullWritable.class);
-		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(NullWritable.class);
+		job.setMapOutputValueClass(LogValueWritable.class);
+		job.setOutputKeyClass(NullWritable.class);
+		job.setOutputValueClass(Text.class);
 		
 		job.setNumReduceTasks(3);
 		

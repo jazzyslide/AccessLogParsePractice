@@ -8,15 +8,16 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.lifexweb.app.hadoop.writable.LogKeyWritable;
+import com.lifexweb.app.hadoop.writable.LogValueWritable;
 
-public class AccessLogParseMapper extends Mapper<LongWritable, Text, LogKeyWritable, NullWritable> {
+public class AccessLogParseMapper extends Mapper<LongWritable, Text, LogKeyWritable, LogValueWritable> {
 	
 	private LogKeyWritable logKey = new LogKeyWritable();
+	private LogValueWritable logValue = new LogValueWritable();
 	private Date logDatetime;
 	private SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private int urlId;
@@ -60,8 +61,9 @@ public class AccessLogParseMapper extends Mapper<LongWritable, Text, LogKeyWrita
 			return;
 		}
 		
-		logKey.set(logDatetime.getTime(), logElements[1], urlId, cvId);
-		context.write(logKey, NullWritable.get());
+		logKey.set(logDatetime.getTime(), logElements[1]);
+		logValue.set(logElements[0],logElements[1],urlId,cvId);
+		context.write(logKey, logValue);
 	}
 
 	@Override
